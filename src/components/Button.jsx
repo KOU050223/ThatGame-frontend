@@ -13,23 +13,23 @@ const Button = ({ label, url, data,onClick }) => {
             onClick()
         }
         console.log('押された')
-        console.log(url)
-        console.log(data)
-        // FlaskサーバーにPOSTリクエストを送信
-        const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data), // 指定されたデータを送信
-        });
+        // console.log(url)
+        // console.log(data)
+        // // FlaskサーバーにPOSTリクエストを送信
+        // const response = await fetch(url, {
+        // method: 'POST',
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        // body: JSON.stringify(data), // 指定されたデータを送信
+        // });
       
-        // リクエストが成功したかどうかをチェック
-        if (response.ok) {
-            console.log('データが正常に送信されました');
-        } else {
-            console.error('データの送信に失敗しました');
-        }
+        // // リクエストが成功したかどうかをチェック
+        // if (response.ok) {
+        //     console.log('データが正常に送信されました');
+        // } else {
+        //     console.error('データの送信に失敗しました');
+        // }
         } catch (error) {
         console.error('エラーが発生しました:', error);
     }
