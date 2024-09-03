@@ -4,11 +4,14 @@ import React from 'react';
 // label: ボタンに表示されるテキスト
 // url: データを送信するエンドポイントのURL
 // data: 送信する特定のデータ
-const Button = ({ label, url, data }) => {
+const Button = ({ label, url, data,onClick }) => {
 
   // handleClick関数を定義
   const handleClick = async () => {
     try {
+        if (onClick){
+            onClick()
+        }
         console.log('押された')
         console.log(url)
         console.log(data)
