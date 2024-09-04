@@ -12,22 +12,6 @@
     background-color: #f8f1e4;
   }
 
-  .chat-label{
-    display: block;
-  }
-
-  .chat-menu{
-    display: block;
-  }
-
-  .chat-menu li{
-    list-style: none;
-  }
-
-  .chat-container {
-    
-  }
-  
   .charge-container {
     display: flex;
     flex-direction: column;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
+import Play from './Play';
 
 function Room() {
     const { roomName } = useParams();  // useParamsフックでURLパラメータを取得
@@ -47,8 +48,9 @@ function Room() {
     };
 
     return (
-        <div>
+        <div className='room-container'>
             <h1>Room: {roomName}</h1>
+            <div className="message-box">
             <ul id="messages">
                 {messages.map((msg, index) => (
                     <li key={index}>{msg}</li>
@@ -65,6 +67,10 @@ function Room() {
                 />
                 <button type="submit">Send</button>
             </form>
+            </div>
+            <div className="play-box">
+                <Play/>
+            </div>
         </div>
     );
 }

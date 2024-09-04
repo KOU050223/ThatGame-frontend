@@ -6,100 +6,146 @@ import './play.css';
 const socket = io('http://172.17.9.141:5003');
 
 const Play = () => {
-  const [message, setMessage] = useState('');
   const [charge, setCharge] = useState(0);
-  const maxCharge = 3; // チャージの最大数
+  const [inputDisabled, setInputDisabled] = useState(false);  // 入力を無効にする状態
+  const [confirmation, setConfirmation] = useState('');  // アクション確認メッセージ
+  const [result, setResult] = useState('');  // 勝敗結果メッセージ
+  const [roomName, setRoomName] = useState('');  // ルーム名
+  const [username, setUsername] = useState('');  // ユーザー名
+  const [joined, setJoined] = useState(false);  // ルームに参加したかどうかの状態
+  const maxCharge = 3;
 
   useEffect(() => {
-    const handleSocketMessage = (msg) => {
-      console.log(msg);
+    // サーバーからのアクション結果を受け取る
+    const handleActionResult = (data) => {
+      console.log("Result received:", data);
+
+      // 勝敗結果を表示するメッセージを設定
+      if (data.is_draw) {
+        setResult('引き分けです');
+      } else {
+        setResult(`${data.winner} が勝ちました`);
+      }
+
+      // 両者の結果が出たら入力を再度有効化
+      setInputDisabled(false);
     };
 
-    socket.on('message', handleSocketMessage);
+    // アクションの送信確認をサーバーから受け取る
+    const handleActionConfirmation = (data) => {
+      setConfirmation(`${data.username} が ${data.action} を選択しました`);
+    };
 
-    // コンポーネントがアンマウントされるときにリスナーをクリーンアップ
+    socket.on('action_result', handleActionResult);
+    socket.on('action_confirmation', handleActionConfirmation);  // 確認メッセージの受け取り
+
+    // クリーンアップ
     return () => {
-      socket.off('message', handleSocketMessage);
+      socket.off('action_result', handleActionResult);
+      socket.off('action_confirmation', handleActionConfirmation);
+      setInputDisabled(false);
     };
   }, []);
 
-  const sendMessage = () => {
-    if (message.trim()) {
-      socket.emit('message', message);
-      setMessage('');
-    }
+  const sendAction = (action) => {
+    // アクション送信前にボタンを無効化
+    setInputDisabled(true);
+    socket.emit('player_action', { 
+      room: roomName,  // 入力されたルーム名
+      username: username,  // 入力されたユーザー名
+      action: action 
+    });
   };
 
   const handleCharge = () => {
-    if (charge < maxCharge) {
+    if (charge < maxCharge && !inputDisabled) {
       setCharge(charge + 1);
+      sendAction('charge');
     }
   };
 
-  const handleAtack = () => {
-    if (charge !== 0) {
-      fetch('http://172.17.9.141:5003/play', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ charge: charge }),  // 現在のチャージをサーバーに送信
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-
-      setCharge(0);  // 攻撃後、チャージをリセット
+  const handleAttack = () => {
+    if (charge !== 0 && !inputDisabled) {
+      sendAction('attack');
+      setCharge(0);
     }
   };
 
   const handleDefence = () => {
-    // 防御のロジックをここに追加
-    console.log("防御アクションがトリガーされました");
+    if (!inputDisabled) {
+      sendAction('defense');
+    }
+  };
+
+  const handleJoinRoom = () => {
+    if (roomName && username) {
+      setJoined(true);
+      socket.emit('join_room', { room: roomName, username: username });
+    }
   };
 
   return (
     <div className='main-container'>
-      <div className="game-container">
-        <div className="box chat-container left">
-          <div className="chat-label">チャット欄</div>
-          <div className="chat-menu">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+      {!joined ? (
+        <div className="join-room-container">
+          <input
+            type="text"
+            placeholder="ルーム名を入力"
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="ユーザー名を入力"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <Button onClick={handleJoinRoom} label="ルームに参加" />
+        </div>
+      ) : (
+        <div className="game-container">
+          <div className="box charge-container right">
+            <div className="charge-label">チャージ</div>
+            <div className="charge-dots">
+              {[...Array(charge)].map((_, index) => (
+                <div key={index} className="charge-dot"></div>
+              ))}
+            </div>
+          </div>
+
+          <div className="actions">
+            <Button 
+              onClick={handleCharge}
+              label="溜め"
+              disabled={inputDisabled}  // 入力無効化
             />
-            <button onClick={sendMessage}>Send</button>
+            <Button 
+              onClick={handleAttack}
+              label="攻撃"
+              disabled={inputDisabled}  // 入力無効化
+            />
+            <Button 
+              onClick={handleDefence}
+              label="防御"
+              disabled={inputDisabled}  // 入力無効化
+            />
           </div>
+
+          {/* アクション確認メッセージの表示 */}
+          {confirmation && (
+            <div className="confirmation-message">
+              {confirmation}
+            </div>
+          )}
+
+          {/* 勝敗結果メッセージの表示 */}
+          {result && (
+            <div className="result-message">
+              {result}
+            </div>
+          )}
         </div>
-        <div className="box opponent-hand center">相手の手</div>
-        <div className="box charge-container right">
-          <div className="charge-label">チャージ</div>
-          <div className="charge-dots">
-            {[...Array(charge)].map((_, index) => (
-              <div key={index} className="charge-dot"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="actions">
-        <Button 
-          onClick={handleCharge}
-          label="溜め"
-        />
-        <Button 
-          onClick={handleAtack}
-          label="攻撃"
-        />
-        <Button 
-          onClick={handleDefence}
-          label="防御"
-        />
-      </div>
+      )}
     </div>
   );
 };

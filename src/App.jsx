@@ -37,6 +37,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Lobby />} />
                 <Route path="/room/:roomName" element={<Room />} />
+                <Route path="/play" element={<Play />} />
             </Routes>
         </Router>
     </div>
