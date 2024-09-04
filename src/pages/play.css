@@ -1,0 +1,118 @@
+.main-container{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.game-container {
+    flex: 3; /* 高さの3/5をこのエリアに割り当てる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f1e4;
+  }
+
+  .chat-label{
+    display: block;
+  }
+
+  .chat-menu{
+    display: block;
+  }
+
+  .chat-menu li{
+    list-style: none;
+  }
+
+  .chat-container {
+    
+  }
+  
+  .charge-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  
+  .charge-label {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .charge-dots {
+    display: flex;
+  }
+  
+  .charge-dot {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .opponent-hand {
+    width: 200px;
+    height: 100px;
+    background-color: #d3d3d3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .actions {
+    flex: 2; /* 高さの2/5をこのエリアに割り当てる */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 縦方向の中央揃え */
+    gap: 10px;
+    background-color: #fff;
+  }
+  
+  .action-button {
+    width: 100px;
+  height: 50px; 
+  background-color: #d3d3d3;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  }
+  
+  .action-button:hover {
+    background-color: #b0b0b0;
+  }
+  
+  /* 上側３つレイアウト */
+  .game-container {
+    display: flex;
+    width: 100%;
+    height: 100vh; /* 必要に応じて高さを調整 */
+    align-items: center; /* 子要素を垂直方向の中央に配置 */
+    justify-content: center; /* 子要素を水平方向の中央に配置 */
+    background-color: #f8f1e4;
+    flex-direction: row; /* 子要素を横に並べる */
+  }
+  .box {
+    display: flex;
+    align-items: center;  /* ボックス内のコンテンツを垂直方向に中央揃え */
+    justify-content: center;  /* ボックス内のコンテンツを水平方向に中央揃え */
+    text-align: center;
+    padding: 20px;
+    color: white;
+    
+  }
+  
+  .left , .right {
+    flex-basis: 25%;  /* 25%の幅 */
+    background-color: #3498db;
+  }
+  
+  .center {
+    flex-basis: 50%;  /* 50%の幅 */
+    background-color: #2ecc71;
+  }
+
