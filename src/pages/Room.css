@@ -1,0 +1,13 @@
+.room-container{
+    background-color: bisque;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.message-box{
+    width: calc(100%/2);
+}
+
+.play-container{
+    width: calc(100%/2);
+}

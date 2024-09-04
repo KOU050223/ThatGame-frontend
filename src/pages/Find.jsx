@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '../components/Button'
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('http://172.17.9.141:5003');
 
 const Find = () => {
 
@@ -20,7 +20,7 @@ const Find = () => {
         <br />
         <Button 
           label="探す"      // ボタンに表示するテキスト
-          url= 'http://localhost:5000/play'         // Flask側のエンドポイントURL
+          url= 'http://172.17.9.141:5003/play'         // Flask側のエンドポイントURL
           data= {{data : 'チャージ'}}    // 送信する特定のデータ
         />
         
