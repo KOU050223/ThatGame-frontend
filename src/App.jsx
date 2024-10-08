@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Play from './pages/Play'
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
+const socket = io('https://thatgame.azurewebsites.net',
+  {
+  secure:true,
+  transports:['websocket','polling'],
+  timeout:20000,
+}
+);
 
-function App() {
+const App = () => {
   return (
     <div>
       <Play/>
