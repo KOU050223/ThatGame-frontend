@@ -107,8 +107,10 @@ const Play = () => {
                 <Button onClick={handleAttack} label="攻撃" disabled={actionPending || charge === 0} />
                 <Button onClick={handleDefence} label="防御" disabled={actionPending} />
             </div>
+          )}
         </div>
     );
+
 };
 
 export default Play;
