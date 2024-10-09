@@ -3,13 +3,8 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './play.css';
 
-const socket = io('http://localhost:443', {
-    secure: true,
-    transports: ['websocket', 'polling'],
-    timeout: 20000,
-});
 
-const Play = () => {
+const Play = ({ socket }) => {
     const [user_name, setUser_name] = useState('testuser');
     const [room_name, setRoom_name] = useState('testroom');
     const [message, setMessage] = useState('');

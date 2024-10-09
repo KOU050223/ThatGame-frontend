@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import Play from './Play';
 
-function Room() {
+function Room({ socket }) {
     const { roomName } = useParams();  // useParamsフックでURLパラメータを取得
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState('');
     const [username, setUsername] = useState('');
@@ -15,8 +15,8 @@ function Room() {
         setUsername(user);
 
         // Socket.IOサーバーへの接続を初期化
-        const newSocket = io('http://172.17.9.141:5003'); // FlaskサーバーのURLを指定
-        setSocket(newSocket);
+        const newSocket = {socket} // FlaskサーバーのURLを指定
+        // setSocket(newSocket);
 
         // サーバーに「join」イベントを送信
         newSocket.emit('join', { room: roomName, username: user });

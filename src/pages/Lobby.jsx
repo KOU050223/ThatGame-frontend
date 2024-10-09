@@ -1,56 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // useNavigateフックでnavigate関数を取得
-import io from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
-function Lobby() {
+function Lobby({ globalsocket }) {
     const [roomName, setRoomName] = useState('');
     const [rooms, setRooms] = useState([]);
-    const navigate = useNavigate();  // useNavigateフックでnavigate関数を取得
+    const navigate = useNavigate();
 
-    const serverIp = "http://172.17.9.141:5003";  // serverIpをここで定義
-    const roomsIp = serverIp + "/rooms";
-    const createroomIp = serverIp + "/create_room";
-    
+    const serverIp = "http://localhost:5000";
+    const roomsIp = `${serverIp}/rooms`;
+
+    console.log("roomIp:",roomsIp);
+    console.log("globalsocket",globalsocket);
+
+
     useEffect(() => {
-        // Socket.IOサーバーへの接続はuseEffect内で行う
-        const socket = io(serverIp);
+        if (!globalsocket) {
+            console.error("Socket is undefined");
+            return;
+        }
 
-        // 初期ロード時に既存のルーム一覧を取得
+        globalsocket.on('room_list_update', (data) => {
+            setRooms(prevRooms => [...prevRooms, data.room_name]);
+        });
+
+        return () => {
+            if (globalsocket) {
+                globalsocket.off('room_list_update');
+            }
+        };
+    }, [globalsocket]);
+
+    useEffect(() => {
         fetch(roomsIp)
             .then(response => response.json())
             .then(data => setRooms(data))
             .catch(error => console.error('Error fetching rooms:', error));
-
-        // サーバーからのルーム更新通知を受け取る
-        socket.on('room_list_update', (data) => {
-            setRooms(prevRooms => [...prevRooms, data.room_name]);
-        });
-
-        // クリーンアップでソケット接続を閉じる
-        return () => {
-            socket.disconnect();
-        };
     }, [roomsIp]);
 
-    // フォーム送信ハンドラー
     const handleCreateRoom = (e) => {
         e.preventDefault();
-        const socket = io(serverIp);  // 送信時に新しいSocket.IO接続を利用
-        // サーバーに新しいルームを作成するリクエストを送信
-        socket.emit('create_room', { room_name: roomName });
-        setRoomName('');  // フォームをクリア
+        if (globalsocket) {
+            globalsocket.emit('create_room', { room_name: roomName });
+            setRoomName('');
+        } else {
+            console.error("Socket is not defined");
+        }
+    };
+
+    const handleRoomClick = (room) => {
+        navigate(`/room/${room}`);
     };
 
     return (
         <div>
             <h1>Lobby</h1>
             <form onSubmit={handleCreateRoom}>
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     value={roomName}
                     onChange={(e) => setRoomName(e.target.value)}
-                    placeholder="Room Name" 
-                    required 
+                    placeholder="Room Name"
+                    required
                 />
                 <button type="submit">Create Room</button>
             </form>
@@ -59,7 +69,7 @@ function Lobby() {
             <ul>
                 {rooms.map((room, index) => (
                     <li key={index}>
-                        <a href={`/room/${room}`}>{room}</a> {/* リンクでルームに遷移 */}
+                        <button onClick={() => handleRoomClick(room)}>{room}</button>
                     </li>
                 ))}
             </ul>
