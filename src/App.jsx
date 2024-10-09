@@ -5,32 +5,15 @@ import Play from './pages/Play'
 import Lobby from './pages/Lobby';
 import io from 'socket.io-client';
 
-const socket = io('http://172.17.9.141:5003');
+const socket = io('https://thatgame.azurewebsites.net',
+  {
+  secure:true,
+  transports:['websocket','polling'],
+  timeout:20000,
+}
+);
 
-
-function App() {
-  useEffect(() => {
-    // クライアントのIPアドレスを取得
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Your IP address is:', data.ip);
-      })
-      .catch(error => {
-        console.error('Error fetching the IP address:', error);
-      });
-
-    // ソケットイベントの例
-    socket.on('connect', () => {
-      console.log('Connected to server');
-    });
-
-    // クリーンアップ: コンポーネントがアンマウントされたときに接続を切断
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
+const App = () => {
   return (
     <div>
       <Router>
