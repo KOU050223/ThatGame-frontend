@@ -6,7 +6,7 @@ function Lobby({ globalsocket }) {
     const [rooms, setRooms] = useState([]);
     const navigate = useNavigate();
 
-    const serverIp = "http://localhost:5000";
+    const serverIp = "http://localhost:443";
     const roomsIp = `${serverIp}/rooms`;
 
     console.log("roomIp:",roomsIp);

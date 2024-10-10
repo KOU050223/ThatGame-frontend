@@ -5,6 +5,7 @@ import './play.css';
 
 
 const Play = ({ socket }) => {
+    console.log(socket);
     const [user_name, setUser_name] = useState('testuser');
     const [room_name, setRoom_name] = useState('testroom');
     const [message, setMessage] = useState('');
