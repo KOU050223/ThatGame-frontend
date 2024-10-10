@@ -6,23 +6,24 @@ function Lobby({ globalsocket }) {
     const [rooms, setRooms] = useState([]);
     const navigate = useNavigate();
 
-    const serverIp = "http://localhost:443";
-    const roomsIp = `${serverIp}/rooms`;
-
-    console.log("roomIp:",roomsIp);
-    console.log("globalsocket",globalsocket);
-
+    const serverIP = "http://localhost:443";
+    const roomsIP = `${serverIP}/rooms`;
 
     useEffect(() => {
         if (!globalsocket) {
             console.error("Socket is undefined");
             return;
         }
-
+    
         globalsocket.on('room_list_update', (data) => {
-            setRooms(prevRooms => [...prevRooms, data.room_name]);
+            console.log("Received room_list_update:", data); // デバッグ用ログ
+            if (data && data.roomName) {
+                setRooms(prevRooms => [...prevRooms, data.roomName]);
+            } else {
+                console.error("Received data is malformed:", data);
+            }
         });
-
+    
         return () => {
             if (globalsocket) {
                 globalsocket.off('room_list_update');
@@ -31,16 +32,16 @@ function Lobby({ globalsocket }) {
     }, [globalsocket]);
 
     useEffect(() => {
-        fetch(roomsIp)
+        fetch(roomsIP)
             .then(response => response.json())
             .then(data => setRooms(data))
             .catch(error => console.error('Error fetching rooms:', error));
-    }, [roomsIp]);
+    }, [roomsIP]);
 
     const handleCreateRoom = (e) => {
         e.preventDefault();
         if (globalsocket) {
-            globalsocket.emit('create_room', { room_name: roomName });
+            globalsocket.emit('create_room', { roomName: roomName });
             setRoomName('');
         } else {
             console.error("Socket is not defined");

@@ -1,18 +1,16 @@
-import Button from '../components/Button'
+import Button from '../components/Button';
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
 import './play.css';
 
+const MAX_CHARGE = 3;
 
 const Play = ({ socket }) => {
-    console.log(socket);
-    const [user_name, setUser_name] = useState('testuser');
-    const [room_name, setRoom_name] = useState('testroom');
+    const [userName, setUserName] = useState('testuser');
+    const [roomName, setRoomName] = useState('testroom');
     const [message, setMessage] = useState('');
     const [charge, setCharge] = useState(0);
-    const [actionPending, setActionPending] = useState(false); // サーバーからの結果待ちフラグ
-    const [result, setResult] = useState(null); // サーバーからの結果を保存
-    const maxCharge = 3; // チャージの最大数
+    const [actionPending, setActionPending] = useState(false);
+    const [result, setResult] = useState(null);
 
     useEffect(() => {
         socket.on('message', msg => {
@@ -33,8 +31,8 @@ const Play = ({ socket }) => {
 
         socket.on('action_result', (data) => {
             console.log('Action result:', data);
-            setResult(data); // サーバーからの結果を保存
-            setActionPending(false); // 結果を受け取ったので待機状態を解除
+            setResult(data);
+            setActionPending(false);
         });
 
         return () => {
@@ -47,30 +45,30 @@ const Play = ({ socket }) => {
     }, []);
 
     const sendMessage = () => {
-        socket.emit('message', { room: room_name, msg: message, username:user_name});
+        socket.emit('message', { roomName: roomName, msg: message, userName: userName });
         setMessage('');
     };
 
     const handleCharge = () => {
-        if (charge < maxCharge && !actionPending) {
+        if (charge < MAX_CHARGE && !actionPending) {
             setCharge(charge + 1);
-            setActionPending(true); // アクション実行中は待機状態に
-            socket.emit('player_action', { room: room_name, username: user_name, action: 'charge' });
+            setActionPending(true);
+            socket.emit('player_action', { room: roomName, username: userName, action: 'charge' });
         }
     };
 
     const handleAttack = () => {
         if (charge !== 0 && !actionPending) {
-            setActionPending(true); // アクション実行中は待機状態に
-            socket.emit('player_action', { room: room_name, username: user_name, action: 'attack' });
-            setCharge(0);  // 攻撃後、チャージをリセット
+            setActionPending(true);
+            socket.emit('player_action', { room: roomName, username: userName, action: 'attack' });
+            setCharge(0);
         }
     };
 
     const handleDefence = () => {
         if (!actionPending) {
-            setActionPending(true); // アクション実行中は待機状態に
-            socket.emit('player_action', { room: room_name, username: user_name, action: 'defense' });
+            setActionPending(true);
+            socket.emit('player_action', { room: roomName, username: userName, action: 'defense' });
         }
     };
 
@@ -78,7 +76,6 @@ const Play = ({ socket }) => {
         <div className='main-container'>
             <div className="game-container">
                 <div className="box chat-container left">
-                    <div className="chat-label">チャット欄</div>
                     <div className="chat-menu">
                         <input
                             type="text"
@@ -105,7 +102,6 @@ const Play = ({ socket }) => {
             </div>
         </div>
     );
-
 };
 
 export default Play;
